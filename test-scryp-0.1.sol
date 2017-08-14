@@ -17,9 +17,6 @@ contract owned {
     }
 }
 
-contract ScrypTestflight is owned {
-    /* the rest of the generic contract tutorial updated for ScrypTestflight */
-
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract ScrypTestflight {
