@@ -19,7 +19,7 @@ contract owned {
 
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
-contract ScrypTestflight {
+contract ScrypTestflight is owned {
     /* Public variables of the token */
     string public standard = 'Test Scryp 0.1';
     string public name;
