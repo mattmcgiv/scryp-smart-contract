@@ -43,14 +43,14 @@ contract ScrypTestflight is owned {
         uint256 initialSupply,
         string tokenName,
         uint8 decimalUnits,
-        string tokenSymbol
+        string tokenSymbol,
         address centralMinter
         ) {
         if(centralMinter != 0 ) owner = centralMinter;
-        ) {
-        balanceOf[msg.sender] = 1,000;                      // Give the creator all initial tokens
-        totalSupply = 1,000;                                // Update total supply
-        name = Test Scryp;                                  // Set the name for display purposes
+         {
+        balanceOf[msg.sender] = 1000;                      // Give the creator all initial tokens
+        totalSupply = 1000;                                // Update total supply
+        name = "Test Scryp";                                  // Set the name for display purposes
         symbol = TSC;                                       // Set the symbol for display purposes
         decimals = 2;                                       // Amount of decimals for display purposes
     }
