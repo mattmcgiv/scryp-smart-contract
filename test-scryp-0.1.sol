@@ -48,11 +48,11 @@ contract ScrypTestflight is owned {
         ) {
         if(centralMinter != 0 ) owner = centralMinter;
          
-        balanceOf[msg.sender] = 1000;                      // Give the creator all initial tokens
-        totalSupply = 1000;                                // Update total supply
-        name = "Test Scryp";                                  // Set the name for display purposes
-        symbol = "TSC";                                       // Set the symbol for display purposes
-        decimals = 2;                                       // Amount of decimals for display purposes
+        balanceOf[msg.sender] = initialSupply;                      // Give the creator all initial tokens
+        totalSupply = initialSupply;                                // Update total supply
+        name = tokenName;                                  // Set the name for display purposes
+        symbol = tokenSymbol;                                       // Set the symbol for display purposes
+        decimals = decimalUnits;                                       // Amount of decimals for display purposes
     }
 
     /*This is a function allowing the owner to mint new tokens after contract deployment*/
