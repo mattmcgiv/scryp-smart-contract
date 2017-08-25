@@ -21,7 +21,7 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 
 contract ScrypTestflight is owned {
     /* Public variables of the token */
-    string public standard = 'Test Scryp 0.1';
+    string public standard = "Test Scryp 0.1";
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -46,7 +46,9 @@ contract ScrypTestflight is owned {
         string tokenSymbol,
         address centralMinter
         ) {
-        if(centralMinter != 0 ) owner = centralMinter;
+        if (centralMinter != 0 ) {
+            owner = centralMinter;
+        }
          
         balanceOf[msg.sender] = initialSupply;                      // Give the creator all initial tokens
         totalSupply = initialSupply;                                // Update total supply
@@ -65,24 +67,34 @@ contract ScrypTestflight is owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        if (_to == 0x0) throw;                               // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
-        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
-        balanceOf[msg.sender] -= _value;                     // Subtract from the sender
-        balanceOf[_to] += _value;                            // Add the same to the recipient
-        Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
+        // Prevent transfer to 0x0 address. Use burn() instead
+        if (_to == 0x0) {
+            throw;
+        }           
+        // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) {
+            throw;
+        }         
+        // Check for overflows  
+        if (balanceOf[_to] + _value < balanceOf[_to]) {
+            throw;
+        }
+        // Subtract from the sender
+        balanceOf[msg.sender] -= _value;
+        // Add the same to the recipient                     
+        balanceOf[_to] += _value;                            
+        // Notify anyone listening that this transfer took place
+        Transfer(msg.sender, _to, _value);                   
     }
 
     /* Allow another contract to spend some tokens in your behalf */
-    function approve(address _spender, uint256 _value)
-        returns (bool success) {
+    function approve(address _spender, uint256 _value) returns (bool success) {
         allowance[msg.sender][_spender] = _value;
         return true;
     }
 
     /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
-        returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         tokenRecipient spender = tokenRecipient(_spender);
         if (approve(_spender, _value)) {
             spender.receiveApproval(msg.sender, _value, this, _extraData);
@@ -92,30 +104,57 @@ contract ScrypTestflight is owned {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (_to == 0x0) throw;                                // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
-        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
-        balanceOf[_from] -= _value;                           // Subtract from the sender
-        balanceOf[_to] += _value;                             // Add the same to the recipient
+        // Prevent transfer to 0x0 address. Use burn() instead
+        if (_to == 0x0) {
+            throw;
+        }
+        // Check if the sender has enough                                
+        if (balanceOf[_from] < _value) {
+            throw;
+        }
+        // Check for overflows
+        if (balanceOf[_to] + _value < balanceOf[_to]) {
+            throw;
+        }
+        // Check allowance
+        if (_value > allowance[_from][msg.sender]) {
+            throw;
+        }
+        // Subtract from the sender
+        balanceOf[_from] -= _value;                           
+        // Add the same to the recipient
+        balanceOf[_to] += _value;                             
         allowance[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
         return true;
     }
 
     function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] < _value) throw;            // Check if the sender has enough
-        balanceOf[msg.sender] -= _value;                      // Subtract from the sender
-        totalSupply -= _value;                                // Updates totalSupply
+        // Check if the sender has enough
+        if (balanceOf[msg.sender] < _value) {
+            throw;
+        }
+        // Subtract from the sender
+        balanceOf[msg.sender] -= _value;      
+        // Updates totalSupply
+        totalSupply -= _value;
         Burn(msg.sender, _value);
         return true;
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] < _value) throw;                // Check if the sender has enough
-        if (_value > allowance[_from][msg.sender]) throw;    // Check allowance
-        balanceOf[_from] -= _value;                          // Subtract from the sender
-        totalSupply -= _value;                               // Updates totalSupply
+        // Check if the sender has enough
+        if (balanceOf[_from] < _value) {
+            throw;
+        }
+        // Check allowance
+        if (_value > allowance[_from][msg.sender]) {
+            throw;
+        }
+        // Subtract from the sender
+        balanceOf[_from] -= _value;                          
+        // Updates totalSupply
+        totalSupply -= _value;                               
         Burn(_from, _value);
         return true;
     }
