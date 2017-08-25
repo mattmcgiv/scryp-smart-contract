@@ -1,14 +1,14 @@
 pragma solidity ^0.4.8;
 
-contract owned {
+contract Owned {
     address public owner;
 
-    function owned() {
+    function Owned() {
         owner = msg.sender;
     }
 
     modifier onlyOwner {
-        if (msg.sender != owner) throw;
+        require(msg.sender == owner);
         _;
     }
 
@@ -17,11 +17,11 @@ contract owned {
     }
 }
 
-contract tokenRecipient {
+contract TokenRecipient {
     function receiveApproval (address _from, uint256 _value, address _token, bytes _extraData);
 }
 
-contract ScrypTestflight is owned {
+contract ScrypTestflight is Owned {
     /* Public variables of the token */
     string public standard = "Test Scryp 0.1";
     string public name;
@@ -53,12 +53,16 @@ contract ScrypTestflight is owned {
 
             // Give the creator all initial tokens
             balanceOf[msg.sender] = initialSupply;
+            
             // Update total supply
             totalSupply = initialSupply;
+            
             // Set the name for display purposes
             name = tokenName;
+            
             // Set the symbol for display purposes
             symbol = tokenSymbol;
+            
             // Amount of decimals for display purposes
             decimals = decimalUnits;
         }
@@ -74,21 +78,20 @@ contract ScrypTestflight is owned {
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         // Prevent transfer to 0x0 address. Use burn() instead
-        if (_to == 0x0) {
-            throw;
-        }
+        require(_to != 0x0);
+        
         // Check if the sender has enough
-        if (balanceOf[msg.sender] < _value) {
-            throw;
-        }
+        require(balanceOf[msg.sender] >= _value);
+        
         // Check for overflows
-        if (balanceOf[_to] + _value < balanceOf[_to]) {
-            throw;
-        }
+        require((balanceOf[_to] + _value) >= balanceOf[_to]);
+        
         // Subtract from the sender
         balanceOf[msg.sender] -= _value;
+        
         // Add the same to the recipient
         balanceOf[_to] += _value;
+        
         // Notify anyone listening that this transfer took place
         Transfer(msg.sender, _to, _value);
     }
@@ -111,23 +114,20 @@ contract ScrypTestflight is owned {
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         // Prevent transfer to 0x0 address. Use burn() instead
-        if (_to == 0x0) {
-            throw;
-        }
+        require(_to != 0x0);
+        
         // Check if the sender has enough
-        if (balanceOf[_from] < _value) {
-            throw;
-        }
+        require(balanceOf[_from] >= _value);
+        
         // Check for overflows
-        if (balanceOf[_to] + _value < balanceOf[_to]) {
-            throw;
-        }
+        require((balanceOf[_to] + _value) >= balanceOf[_to]);
+        
         // Check allowance
-        if (_value > allowance[_from][msg.sender]) {
-            throw;
-        }
+        require(_value <= allowance[_from][msg.sender]);
+        
         // Subtract from the sender
         balanceOf[_from] -= _value;
+        
         // Add the same to the recipient
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
@@ -137,11 +137,11 @@ contract ScrypTestflight is owned {
 
     function burn(uint256 _value) returns (bool success) {
         // Check if the sender has enough
-        if (balanceOf[msg.sender] < _value) {
-            throw;
-        }
+        require(balanceOf[msg.sender] >= _value);
+        
         // Subtract from the sender
         balanceOf[msg.sender] -= _value;
+        
         // Updates totalSupply
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -150,15 +150,14 @@ contract ScrypTestflight is owned {
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
         // Check if the sender has enough
-        if (balanceOf[_from] < _value) {
-            throw;
-        }
+        require(balanceOf[_from] >= _value);
+        
         // Check allowance
-        if (_value > allowance[_from][msg.sender]) {
-            throw;
-        }
+        require(_value <= allowance[_from][msg.sender]);
+        
         // Subtract from the sender
         balanceOf[_from] -= _value;
+        
         // Updates totalSupply
         totalSupply -= _value;
         Burn(_from, _value);
