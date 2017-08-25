@@ -17,7 +17,9 @@ contract owned {
     }
 }
 
-contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
+contract tokenRecipient {
+    function receiveApproval (address _from, uint256 _value, address _token, bytes _extraData);
+}
 
 contract ScrypTestflight is owned {
     /* Public variables of the token */
@@ -26,7 +28,6 @@ contract ScrypTestflight is owned {
     string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
-
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
@@ -46,16 +47,21 @@ contract ScrypTestflight is owned {
         string tokenSymbol,
         address centralMinter
         ) {
-        if (centralMinter != 0 ) {
-            owner = centralMinter;
+            if (centralMinter != 0 ) {
+                owner = centralMinter;
+            }
+
+            // Give the creator all initial tokens
+            balanceOf[msg.sender] = initialSupply;
+            // Update total supply
+            totalSupply = initialSupply;
+            // Set the name for display purposes
+            name = tokenName;
+            // Set the symbol for display purposes
+            symbol = tokenSymbol;
+            // Amount of decimals for display purposes
+            decimals = decimalUnits;
         }
-         
-        balanceOf[msg.sender] = initialSupply;                      // Give the creator all initial tokens
-        totalSupply = initialSupply;                                // Update total supply
-        name = tokenName;                                  // Set the name for display purposes
-        symbol = tokenSymbol;                                       // Set the symbol for display purposes
-        decimals = decimalUnits;                                       // Amount of decimals for display purposes
-    }
 
     /*This is a function allowing the owner to mint new tokens after contract deployment*/
     function mintToken(address target, uint256 mintedAmount) onlyOwner {
@@ -63,28 +69,28 @@ contract ScrypTestflight is owned {
         totalSupply += mintedAmount;
         Transfer(0, owner, mintedAmount);
         Transfer(owner, target, mintedAmount);
-}
+    }
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
         // Prevent transfer to 0x0 address. Use burn() instead
         if (_to == 0x0) {
             throw;
-        }           
+        }
         // Check if the sender has enough
         if (balanceOf[msg.sender] < _value) {
             throw;
-        }         
-        // Check for overflows  
+        }
+        // Check for overflows
         if (balanceOf[_to] + _value < balanceOf[_to]) {
             throw;
         }
         // Subtract from the sender
         balanceOf[msg.sender] -= _value;
-        // Add the same to the recipient                     
-        balanceOf[_to] += _value;                            
+        // Add the same to the recipient
+        balanceOf[_to] += _value;
         // Notify anyone listening that this transfer took place
-        Transfer(msg.sender, _to, _value);                   
+        Transfer(msg.sender, _to, _value);
     }
 
     /* Allow another contract to spend some tokens in your behalf */
@@ -100,7 +106,7 @@ contract ScrypTestflight is owned {
             spender.receiveApproval(msg.sender, _value, this, _extraData);
             return true;
         }
-    }        
+    }
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
@@ -108,7 +114,7 @@ contract ScrypTestflight is owned {
         if (_to == 0x0) {
             throw;
         }
-        // Check if the sender has enough                                
+        // Check if the sender has enough
         if (balanceOf[_from] < _value) {
             throw;
         }
@@ -121,9 +127,9 @@ contract ScrypTestflight is owned {
             throw;
         }
         // Subtract from the sender
-        balanceOf[_from] -= _value;                           
+        balanceOf[_from] -= _value;
         // Add the same to the recipient
-        balanceOf[_to] += _value;                             
+        balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
         return true;
@@ -135,7 +141,7 @@ contract ScrypTestflight is owned {
             throw;
         }
         // Subtract from the sender
-        balanceOf[msg.sender] -= _value;      
+        balanceOf[msg.sender] -= _value;
         // Updates totalSupply
         totalSupply -= _value;
         Burn(msg.sender, _value);
@@ -152,9 +158,9 @@ contract ScrypTestflight is owned {
             throw;
         }
         // Subtract from the sender
-        balanceOf[_from] -= _value;                          
+        balanceOf[_from] -= _value;
         // Updates totalSupply
-        totalSupply -= _value;                               
+        totalSupply -= _value;
         Burn(_from, _value);
         return true;
     }
