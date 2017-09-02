@@ -51,23 +51,23 @@ contract ScrypTestflight is Owned {
                 owner = centralMinter;
             }
 
-            // Give the creator all initial tokens
+            /* Give the creator all initial tokens */
             balanceOf[msg.sender] = initialSupply;
             
-            // Update total supply
+            /* Update total supply */
             totalSupply = initialSupply;
             
-            // Set the name for display purposes
+            /* Set the name for display purposes */
             name = tokenName;
             
-            // Set the symbol for display purposes
+            /* Set the symbol for display purposes */
             symbol = tokenSymbol;
             
-            // Amount of decimals for display purposes
+            /* Amount of decimals for display purposes */
             decimals = decimalUnits;
         }
 
-    /*This is a function allowing the owner to mint new tokens after contract deployment*/
+    /* This is a function allowing the owner to mint new tokens after contract deployment */
     function mintToken(address target, uint256 mintedAmount) onlyOwner {
         balanceOf[target] += mintedAmount;
         totalSupply += mintedAmount;
@@ -77,22 +77,22 @@ contract ScrypTestflight is Owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
-        // Prevent transfer to 0x0 address. Use burn() instead
+        /* Prevent transfer to 0x0 address. Use burn() instead */
         require(_to != 0x0);
         
-        // Check if the sender has enough
+        /* Check if the sender has enough */
         require(balanceOf[msg.sender] >= _value);
         
-        // Check for overflows
+        /* Check for overflows */
         require((balanceOf[_to] + _value) >= balanceOf[_to]);
         
-        // Subtract from the sender
+        /* Subtract from the sender */
         balanceOf[msg.sender] -= _value;
         
-        // Add the same to the recipient
+        /* Add the same to the recipient */
         balanceOf[_to] += _value;
         
-        // Notify anyone listening that this transfer took place
+        /* Notify anyone listening that this transfer took place */
         Transfer(msg.sender, _to, _value);
     }
 
@@ -104,7 +104,7 @@ contract ScrypTestflight is Owned {
 
     /* Approve and then communicate the approved contract in a single tx */
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
-        tokenRecipient spender = tokenRecipient(_spender);
+        TokenRecipient spender = TokenRecipient(_spender);
         if (approve(_spender, _value)) {
             spender.receiveApproval(msg.sender, _value, this, _extraData);
             return true;
@@ -113,22 +113,22 @@ contract ScrypTestflight is Owned {
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        // Prevent transfer to 0x0 address. Use burn() instead
+        /* Prevent transfer to 0x0 address. Use burn() instead */
         require(_to != 0x0);
         
-        // Check if the sender has enough
+        /* Check if the sender has enough */
         require(balanceOf[_from] >= _value);
         
-        // Check for overflows
+        /* Check for overflows */
         require((balanceOf[_to] + _value) >= balanceOf[_to]);
         
-        // Check allowance
+        /* Check allowance */
         require(_value <= allowance[_from][msg.sender]);
         
-        // Subtract from the sender
+        /* Subtract from the sender */
         balanceOf[_from] -= _value;
         
-        // Add the same to the recipient
+        /* Add the same to the recipient */
         balanceOf[_to] += _value;
         allowance[_from][msg.sender] -= _value;
         Transfer(_from, _to, _value);
@@ -136,29 +136,29 @@ contract ScrypTestflight is Owned {
     }
 
     function burn(uint256 _value) returns (bool success) {
-        // Check if the sender has enough
+        /* Check if the sender has enough */
         require(balanceOf[msg.sender] >= _value);
         
-        // Subtract from the sender
+        /* Subtract from the sender */
         balanceOf[msg.sender] -= _value;
         
-        // Updates totalSupply
+        /* Updates totalSupply */
         totalSupply -= _value;
         Burn(msg.sender, _value);
         return true;
     }
 
     function burnFrom(address _from, uint256 _value) returns (bool success) {
-        // Check if the sender has enough
+        /* Check if the sender has enough */
         require(balanceOf[_from] >= _value);
         
-        // Check allowance
+        /* Check allowance */
         require(_value <= allowance[_from][msg.sender]);
         
-        // Subtract from the sender
+        /* Subtract from the sender */
         balanceOf[_from] -= _value;
         
-        // Updates totalSupply
+        /* Updates totalSupply */
         totalSupply -= _value;
         Burn(_from, _value);
         return true;
