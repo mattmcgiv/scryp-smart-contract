@@ -163,4 +163,8 @@ contract ScrypTestflight is Owned {
         Burn(_from, _value);
         return true;
     }
+
+    function getBalance(address _a) returns (uint256) {
+        return balanceOf[_a];
+    }
 }
